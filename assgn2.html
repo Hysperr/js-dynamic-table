@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="assgn2.css"/>
+</head>
+<body>
+
+<div class="box">
+    <table id="my-table">
+        <tr>
+            <th>INPUT</th>
+            <th>LENGTH</th>
+        </tr>
+        <tr>
+            <td>
+                <form>
+                    <label>
+                        1
+                        <input type="text" oninput="countInputLength(this)">
+                    </label>
+                </form>
+            </td>
+            <td>
+                0
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        var num = 1;
+
+        function addRow() {
+            num++;
+            var row = document.getElementById('my-table').insertRow(-1);
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            cell0.innerHTML =
+                '                <form>\n' +
+                '                    <label>\n' +
+                '                        ' + num + '\n' +
+                '                        <input type="text" oninput="countInputLength(this)">\n' +
+                '                    </label>\n' +
+                '                </form>';
+            cell1.innerHTML = cell0.getElementsByTagName('input')[0].value.length;
+//            row.cells[2].innerHTML='<p>hello</p>'
+        }
+
+        function removeRow() {
+            var table = document.getElementById('my-table');
+            if (table.rows.length > 2) {
+                table.deleteRow(-1);
+                num--;
+            }
+        }
+
+        function countInputLength(obj) {
+            var table = document.getElementById('my-table');
+            var idx = obj.parentNode.parentNode.parentNode.parentNode.rowIndex;
+            var curSize = table.rows[idx].cells[0].getElementsByTagName('input')[0].value.length;
+            table.rows[idx].cells[1].innerHTML = curSize;
+            // alert(obj.parentNode.parentNode.parentNode.parentNode.rowIndex);
+            // input <- label <- form <- table data <- rowIndex // goodness that's cumbersome...
+        }
+
+        function sortCells() {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById('my-table');
+            switching = true;
+            /* Make a loop that will continue until no switching has been done: */
+            while (switching) {
+                // start by saying: no switching is done:
+                switching = false;
+                rows = table.getElementsByTagName('tr');
+                /* Loop through all the table rows (except first, which contains table headers):*/
+                for (i = 1; i < (rows.length - 1); i++) {
+                    // start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /* Get the two elements you want to compare, one from current row and one from the next row:*/
+                    x = rows[i].cells[0].getElementsByTagName('input')[0].value;
+                    y = rows[i + 1].cells[0].getElementsByTagName('input')[0].value;
+                    // check if the two rows should switch place:
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    /*If a switch has been marked, make the switch and mark that a switch has been done:*/
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);  // what, where
+                    switching = true;
+                }
+            }
+        }
+    </script>
+    <div class="my-buttons">
+        <button onclick="addRow()">Add Cell</button>
+        <button onclick="removeRow()">Remove Cell</button>
+        <button onclick="sortCells()">Sort</button>
+    </div>
+</div>
+
+</body>
+</html>

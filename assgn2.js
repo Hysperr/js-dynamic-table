@@ -36,11 +36,11 @@ function removeRow() {
     var table = document.getElementById('my-table');
     if (table.rows.length > 2) {
         var lastRow = table.rows[table.rows.length - 1];
+        addBackContent = lastRow.getElementsByTagName('input')[0].value;
+        addBackFlag = true;
         table.deleteRow(-1);
         num--;
     }
-    addBackContent = lastRow.getElementsByTagName('input')[0].value;
-    addBackFlag = true;
 }
 
 function countInputLength(obj) {

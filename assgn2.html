@@ -16,10 +16,10 @@
         <tr>
             <td>
                 <form>
-                    <label>
+                    <label for="tmp">
                         1
-                        <input type="text" oninput="countInputLength(this)">
                     </label>
+                    <input id="tmp" type="text" oninput="countInputLength(this)">
                 </form>
             </td>
             <td>
@@ -38,13 +38,12 @@
             var cell1 = row.insertCell(1);
             cell0.innerHTML =
                 '                <form>\n' +
-                '                    <label>\n' +
+                '                    <label for="tmp">\n' +
                 '                        ' + num + '\n' +
-                '                        <input type="text" oninput="countInputLength(this)">\n' +
                 '                    </label>\n' +
+                '                        <input id="tmp" type="text" oninput="countInputLength(this)">\n' +
                 '                </form>';
             cell1.innerHTML = cell0.getElementsByTagName('input')[0].value.length;
-//            row.cells[2].innerHTML='<p>hello</p>'
         }
 
         function removeRow() {
@@ -57,44 +56,75 @@
 
         function countInputLength(obj) {
             var table = document.getElementById('my-table');
-            var idx = obj.parentNode.parentNode.parentNode.parentNode.rowIndex;
+            var idx = obj.parentNode.parentNode.parentNode.rowIndex;
             var curSize = table.rows[idx].cells[0].getElementsByTagName('input')[0].value.length;
             table.rows[idx].cells[1].innerHTML = curSize;
             // alert(obj.parentNode.parentNode.parentNode.parentNode.rowIndex);
-            // input <- label <- form <- table data <- rowIndex // goodness that's cumbersome...
+            // input <- form <- table data <- rowIndex // goodness that's cumbersome...
+        }
+
+        function reorderCellLabels() {
+            var switching, table, rows, i, x, y, shouldSwitch;
+            table = document.getElementById('my-table');
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.getElementsByTagName('tr');
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].cells[0].getElementsByTagName('label')[0];
+                    y = rows[i + 1].cells[0].getElementsByTagName('label')[0];
+                    if (x.innerHTML > y.innerHTML) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    var tmp = rows[i].cells[0].getElementsByTagName('label')[0].innerHTML;
+                    rows[i].cells[0].getElementsByTagName('label')[0].innerHTML = y.innerHTML;  // 2 overwritten by 1
+                    rows[i + 1].cells[0].getElementsByTagName('label')[0].innerHTML = tmp;  // 1 overwritten by tmp 2
+                    switching = true;
+                }
+            }
         }
 
         function sortCells() {
             var table, rows, switching, i, x, y, shouldSwitch;
-            table = document.getElementById('my-table');
+            table = document.getElementById("my-table");
             switching = true;
-            /* Make a loop that will continue until no switching has been done: */
+            /*Make a loop that will continue until
+            no switching has been done:*/
             while (switching) {
-                // start by saying: no switching is done:
+                //start by saying: no switching is done:
                 switching = false;
-                rows = table.getElementsByTagName('tr');
-                /* Loop through all the table rows (except first, which contains table headers):*/
+                rows = table.getElementsByTagName("TR");
+                /*Loop through all table rows (except the
+                first, which contains table headers):*/
                 for (i = 1; i < (rows.length - 1); i++) {
-                    // start by saying there should be no switching:
+                    //start by saying there should be no switching:
                     shouldSwitch = false;
-                    /* Get the two elements you want to compare, one from current row and one from the next row:*/
-                    x = rows[i].cells[0].getElementsByTagName('input')[0].value;
-                    y = rows[i + 1].cells[0].getElementsByTagName('input')[0].value;
-                    // check if the two rows should switch place:
-                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    /*Get the two ELEMENTS (not innerHTML text) you want to compare,
+                    one from current row and one from the next:*/
+                    x = rows[i].cells[0].getElementsByTagName('input')[0];
+                    y = rows[i + 1].cells[0].getElementsByTagName('input')[0];
+                    //check if the two rows should switch place:
+                    if (x.value.toLowerCase() > y.value.toLowerCase()) {
                         //if so, mark as a switch and break the loop:
                         shouldSwitch = true;
                         break;
                     }
                 }
                 if (shouldSwitch) {
-                    /*If a switch has been marked, make the switch and mark that a switch has been done:*/
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);  // what, where
+                    /*If a switch has been marked, make the switch
+                    and mark that a switch has been done:*/
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                     switching = true;
                 }
             }
+            reorderCellLabels();
         }
     </script>
+
     <div class="my-buttons">
         <button onclick="addRow()">Add Cell</button>
         <button onclick="removeRow()">Remove Cell</button>
